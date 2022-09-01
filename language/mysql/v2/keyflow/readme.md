@@ -19,8 +19,14 @@
 1. join
 2. group by ... having
 3. order by
-4. count
+4. count/sum/avg: `没有匹配行时则返回 null`
 5. random
 6. in/exists
 7. or
 8. limit
+9. rank
+10. case
+11. with
+12. null
+13. distinct
+14. union

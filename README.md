@@ -1,5 +1,19 @@
 [toc]
 
+## 数据组件
+
+1. 缓存: redis
+2. OLTP: mysql
+3. OLAP: Hadoop
+4. 批处理/数据仓库: flink
+5. 流处理/消息队列: Kafka
+6. 搜索索引: es
+7. 文档数据库: mongo, Couchbase
+8. 地理数据库: PostGIS
+9. 空间数据库
+10. 时序数据库: influxdb
+11. 图数据库: Neo4j
+
 ## dimension: todo
 
 1. 架构:
@@ -67,7 +81,42 @@
 
 ## mysql vs pgsql
 
+1. join(hash join):
+2. oltp
+3. 数据类型: GIS
+4. **json**
+5. string/text
+6. sp
+7. _rr_
+8. cluster: ha(crash-safe)
+9. 聚合函数(复杂查询)： olap || ETL
+10. **性能**
+
+    ![avatar](/static/image/pgsql/pgsql-pt.png)
+    ![avatar](/static/image/mysql/mysql-pt.png)
+
+11. 单标数据量: pgsql(kw) | mysql(bw)
+12. **分区**
+13. 初衷: postgres 更加偏学术研究，各种各样的功能全，则 mysql 偏应用，功能不追求完善，追求实用、性能
+14. 架构: 多线程 | 多进程
+15. 生态: pgadmin | tidb
+16. slogan: 最流行 | 最优秀
+17. PG 的优化执行引擎要比 MySQL 更好
+18. PG 的开源协议比 MySQL 更好: BSD || GPL
+19. 特色: mysql(engine layer)
+20. sql 标准实现: PG 好(学院派), 超严格
+21. PG 主表采用堆表存放, MySQL 采用索引组织表
+22. 异构技术: pg 可以将多种源作为数据源
+23. 提交方式: 异步
+24. 使用场景: 如果你的场景并发量比较大，直接 MySQL 在生态(TiDB)及人员招聘上，你会省掉很多事情 || 小 olap(一专多能)
+25. 数据库类型: rdbms || ordbms
+26. XML 支持: 只 pg 可以
+27. 物化视图: 只 pg 可以
+
+## mysql vs mongodb
+
 1. todo
+2. 索引: https://zhuanlan.zhihu.com/p/519658576
 
 ---
 
@@ -76,6 +125,10 @@
 1. [nosql vs newsql](https://www.geeksforgeeks.org/difference-between-nosql-and-newsql/)
 2. [nosql vs sql](https://www.geeksforgeeks.org/difference-between-sql-and-nosql/)
 3. [dbms & rdbms](https://www.geeksforgeeks.org/difference-between-rdbms-and-dbms/)
+4. [pgsql vs mysql](https://www.zhihu.com/question/20010554)
+5. [pgsql vs mysql](https://www.zhihu.com/question/20010554/answer/94999834)
+6. [_pgsql vs mysql_](https://www.zhihu.com/question/20010554/answer/743955463)
+7. [pgsql vs mysql](https://zhuanlan.zhihu.com/p/519946960)
 
 ---
 

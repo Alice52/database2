@@ -56,11 +56,10 @@
    |      场景      | 事务, 金钱等             | 大数据, 社交,物联网            |
    |     theory     | acid                     | cap(base)                      |          acid          |
    |      生态      | 好                       | 好                             |          一般          |
-   |    example     | mysql, pgsql, oracle     | mongodb, redis, neo4j, hive    |      VoltDB,NuoDB      |
+   |    example     | mysql, pgsql, oracle     | mongodb, redis, neo4j, hive    |      tidb,VoltDB       |
    | 复杂查询(聚合) | 一般                     | 差                             |           好           |
    |      事务      | 友好                     | 一般                           |      支持联机事务      |
    |      索引      | 友好                     | 友好                           |          友好          |
-   |     sample     | oracle,mysql,pgsql       | mongo,redis,es                 |          tidb          |
 
 ## ~~[dbms vs rdbms](https://byjus.com/gate/difference-between-dbms-and-rdbms/)~~
 
@@ -112,11 +111,13 @@
 25. 数据库类型: rdbms || ordbms
 26. XML 支持: 只 pg 可以
 27. 物化视图: 只 pg 可以
+28. 批处理
 
 ## mysql vs mongodb
 
-1. todo
-2. 索引: https://zhuanlan.zhihu.com/p/519658576
+1. sql and nosql
+2. arthecture and cluster
+3. [index and explian](https://zhuanlan.zhihu.com/p/519658576)
 
 ---
 

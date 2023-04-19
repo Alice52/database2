@@ -173,35 +173,36 @@ db.emp.find();
 ## group and sum
 
 ```js
-db.collection-name.aggregate([
+db.collection -
+  name.aggregate([
     {
       $match: {
-        accountId: ObjectId("5eb3f0ed44bc2902777c5732"),
+        accountId: ObjectId('5eb3f0ed44bc2902777c5732'),
         kolId: {
-          $in: [ObjectId("5ecb9bdc4d4fe300b473e634")]
-        }
-      }
+          $in: [ObjectId('5ecb9bdc4d4fe300b473e634')],
+        },
+      },
     },
     {
       $group: {
-        _id: "$refDay",
+        _id: '$refDay',
         sentUser: {
           $sum: {
-            $sum: "$sentUser"
-          }
+            $sum: '$sentUser',
+          },
         },
         intPageReadCount: {
           $sum: {
-            $sum: "$intPageReadCount"
-          }
-        }
-      }
+            $sum: '$intPageReadCount',
+          },
+        },
+      },
     },
     {
       $sort: {
-        _id: 1
-      }
-    }
+        _id: 1,
+      },
+    },
   ]);
 ```
 
@@ -212,26 +213,26 @@ db.collection -
   name.aggregate([
     {
       $match: {
-        accountId: ObjectId("5eb3f0ed44bc2902777c5732")
-      }
+        accountId: ObjectId('5eb3f0ed44bc2902777c5732'),
+      },
     },
     {
       $group: {
-        _id: "$kolId",
+        _id: '$kolId',
         maiStats: {
           $push: {
-            refDay: "$refDay"
-          }
-        }
-      }
+            refDay: '$refDay',
+          },
+        },
+      },
     },
     {
       $project: {
         refDay: {
-          $max: "$maiStats.refDay"
-        }
-      }
-    }
+          $max: '$maiStats.refDay',
+        },
+      },
+    },
   ]);
 ```
 
@@ -335,31 +336,31 @@ db.getCollection('test').aggregate([
 ## udpate
 
 ```js
-db.jingmaiKol.update({}, { $set: { accountType: "aaa" } }, false, true);
+db.jingmaiKol.update({}, { $set: { accountType: 'aaa' } }, false, true);
 db.jingmaiKolAdmin.updateMany(
   {},
-  { $rename: { mcnCode: "mcnInvitationCode" } },
+  { $rename: { mcnCode: 'mcnInvitationCode' } },
   false,
   true
 );
-db.jingmaiKol.update({}, { $unset: { status: "" } }, false, true);
+db.jingmaiKol.update({}, { $unset: { status: '' } }, false, true);
 db.jingmaiKol.updateMany(
   {},
-  { $rename: { contentType: "accountType" } },
+  { $rename: { contentType: 'accountType' } },
   false,
   true
 );
-db.jingmaiKol.update({}, { $set: { accountType: "aaa" } }, false, true);
-db.getCollection("jingmaiKolSearchResult").update(
+db.jingmaiKol.update({}, { $set: { accountType: 'aaa' } }, false, true);
+db.getCollection('jingmaiKolSearchResult').update(
   {
     taskId: {
-      $in: [ObjectId("5f2bad13f5156d51ed1e26e3")]
-    }
+      $in: [ObjectId('5f2bad13f5156d51ed1e26e3')],
+    },
   },
   {
     $set: {
-      isDeleted: true
-    }
+      isDeleted: true,
+    },
   },
   false,
   true

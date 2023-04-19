@@ -58,7 +58,7 @@
    |      生态      | 好                       | 好                             |          一般          |
    |    example     | mysql, pgsql, oracle     | mongodb, redis, neo4j, hive    |      tidb,VoltDB       |
    | 复杂查询(聚合) | 一般                     | 差                             |           好           |
-   |      事务      | 友好                     | 一般                           |      支持联机事务      |
+   |      事务      | 友好                     | 差                             |      支持联机事务      |
    |      索引      | 友好                     | 友好                           |          友好          |
 
 ## ~~[dbms vs rdbms](https://byjus.com/gate/difference-between-dbms-and-rdbms/)~~
@@ -116,6 +116,9 @@
 ## mysql vs mongodb
 
 1. sql and nosql
+   - acid
+   - tranasction
+   - 使用场景
 2. arthecture and cluster
 3. [index and explian](https://zhuanlan.zhihu.com/p/519658576)
 

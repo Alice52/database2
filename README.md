@@ -26,8 +26,8 @@
 8. cpu
 9. 数据量
 10. 数据类型: json/text 等大字段支持
-11. 表|试图
-12. 索引
+11. 表|视图: 存储方式
+12. 索引: 存储方式
 13. 事务
 14. 锁
 15. SP
@@ -89,7 +89,7 @@
 7. _rr_
 8. cluster: ha(crash-safe)
 9. 聚合函数(复杂查询)： olap || ETL
-10. **性能**
+10. **性能**: 好上一个数量及
 
     ![avatar](/static/image/pgsql/pgsql-pt.png)
     ![avatar](/static/image/mysql/mysql-pt.png)
@@ -105,6 +105,7 @@
 19. 特色: mysql(engine layer)
 20. sql 标准实现: PG 好(学院派), 超严格
 21. PG 主表采用堆表存放, MySQL 采用索引组织表
+    - pgsql 不是完全遵循最左前缀法则
 22. 异构技术: pg 可以将多种源作为数据源
 23. 提交方式: 异步
 24. 使用场景: 如果你的场景并发量比较大，直接 MySQL 在生态(TiDB)及人员招聘上，你会省掉很多事情 || 小 olap(一专多能)
@@ -121,6 +122,10 @@
    - 使用场景
 2. arthecture and cluster
 3. [index and explian](https://zhuanlan.zhihu.com/p/519658576)
+
+## interview
+
+1. ER 图
 
 ---
 

@@ -122,12 +122,23 @@
    - 使用场景
 2. arthecture and cluster
 3. [index and explian](https://zhuanlan.zhihu.com/p/519658576)
+4. mysql vs mongodb vs redis
 
-## interview
+   - 关系型数据库的优点
 
-1. ER 图
+     1. **容易**理解, 因为它采用了关系模型来组织数据
+     2. 维护数据表之间的**关系**: 可以关联查询
+     3. 支持**复杂查询**(带 where 子句的查询)
+     4. 可以保持数据的一致性
+     5. 数据更新的开销比较小
 
----
+   - 非关系型数据库的优点: 内存性数据库以及文档型数据库
+
+     1. 无需经过 SQL 层的解析, 读写**效率**高
+     2. 基于键值对, 读写性能很高, 易于**扩展**
+     3. 可以应对高**并发**场景
+     4. 可以支持多种类型数据的存储, 如图片, 文档等等
+     5. 适合场景: **数据量**大高可用的日志系统/地理位置存储系统
 
 ## reference
 
@@ -141,22 +152,6 @@
 
 ---
 
-## language
+## interview
 
-### mysql
-
-### redis
-
-### mongodb
-
-### es
-
-## framework
-
-### mybatis
-
-### mapper
-
-### mybatisplus
-
-### jpa
+1. ER 图

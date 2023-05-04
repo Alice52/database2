@@ -36,19 +36,22 @@
 
 1. 定义: `innodb` 中是一快可`重复利用`的`顺序读写`的`固定大小`的`磁盘空间`, 是一种 `Write-Ahead Logging[先写日志]{将来会出现的数据}`, `物理日志`[数据页上的修改]
 
-   - 是 innodb 中的概念, 所有线程共用{**可以是多个 redolog 文件**}
+   - 是 innodb 中的概念, 所有线程共用{**可以是多个大小相等 redolog 文件**}
    - 顺序写: 速度极快
    - WAL: 先写日志
-   - commit 前不需要将数据整合到真正的数据表{随机写}
+   - commit 前不需要将数据整合到真正的数据表{随机写}, 刷盘后就会删除
    - 固定大小: 环形数组, redo-log 只能循环写, 不能满了就创建新的{满了就主要停下来, 等待将 redolog 内容写到表磁盘[随机 IO]}
    - 数据页上的修改
    - **redo log 是数据页, 因此一旦 commit 就不能回滚, 否则会导致其他事务的写丢失**
    - 使 MySQL 具有了崩溃恢复能力
+   - 内容: `表空间号+数据页号+偏移量+修改数据长度+具体修改的数据`
+
+   ![avatar](/static/image/mysql/log-innodb-redolog.png)
 
 2. 作用:
 
    - redo-log + bin-log **二阶段提交**保证数据安全 + crash safe
-   - 快速提高吞吐量等
+   - 快速提高吞吐量等: 大小 | 顺序写
    - redo log 只记录 innoDB 自身的事务日志
 
 3. redo log buffer: 全局共用{MySQL 的内存中}
@@ -75,6 +78,8 @@
    - write pos 和 checkpoint 之间的是空着的部分, 可以用来记录新的操作.
    - `如果 write pos 追上 checkpoint, **这时候不能再执行新的更新**`, 得停下来等待 checkpoint 推进
 
+   ![avatar](/static/image/mysql/log-innodb-redolog-file.png)
+
 5. flow
 
    - 存在 redo log buffer 中: 物理上是在 MySQL 进程内存中
@@ -88,22 +93,24 @@
    - 在事务提交之前不需要将数据持久化到数据表的磁盘, 只需要记录到 Redolog 中就行
    - 当系统崩溃时, 虽然数据没有持久化到数据表的磁盘, 但是系统可以根据 redo-log 里的内容将数据恢复到最新的状态
    - innodb_flush_log_at_trx_commit:
-     1. 0: 表示写入 innodb 的 logbuffer
+     1. 0: 表示写入 innodb 的 _redo_ logbuffer
+        ![avatar](/static/image/mysql/log-innodb-redolog-flush0.png)
      2. **默认值是 1**: 表示每次都将数据直接写到 os buffer 并调用 fsync 刷入磁盘{prepare 阶段就需要持久化}
-     3. 2: 表示直接写入 OS buffer{page cache}
+        ![avatar](/static/image/mysql/log-innodb-redolog-flush1.png)
+     3. 2: 表示直接写入 OS buffer{page cache} + **风险: 主机宕机时会丢数据**
+        ![avatar](/static/image/mysql/log-innodb-redolog-flush2.png)
 
-7. 将 innodb_flush_log_at_trx_commit 设置为 2
-
-   - **风险: 主机宕机时会丢数据**
-
-8. InnoDB 有一个后台线程: 每隔 1 秒
+7. InnoDB 有一个后台线程: 每隔 1 秒
 
    - redo log buffer 中的日志 write 写到文件系统的 page cache
    - 调用 fsync 持久化到磁盘
    - **一个没有提交的事务的 redo log, 也是可能已经持久化到磁盘的**
 
-9. 没提交事务的 redo log 被写入磁盘的场景: _回滚时使用 undolog 恢复磁盘数据_
+8. 没提交事务的 redo log 被写入磁盘的场景: _回滚时使用 undolog 恢复磁盘数据_
 
    - InnoDB 每秒一次的后台线程: buffer -> fs page cache -> disk
    - buffer 使用空间达到 1/2 的 innodb_log_buffer_size 时会写入 page cache
    - 并行的事务提交的时候, 顺带将这个事务的 redo log buffer 持久化到磁盘
+
+9. update/delete/insert/query 影响
+   - 看具体的执行过程

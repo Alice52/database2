@@ -1,17 +1,25 @@
 ## Engine- InnonDB
 
-1. InnoDB 是第一个完整支持 ACID 事务的 MySQL 存储引擎
-2. 内容
+1. InnoDB 是第一个完整支持 ACID 事务的 MySQL 存储引擎: OLTP
+2. [feature](../01.basic/01.introduce.md)
+
+   - 行锁设计
+   - 外键
+   - 支持 MVCC
+   - 提供一致性非锁定读
+   - 非聚簇索引
+   - 崩溃恢复: redolog
+
+3. 内容
 
    - 后台线程: 7 个
-   - buffer pool
-   - redolog buffer
-   - ~~undolog buffer~~: 不存在
+   - buffer pool: redolog/undolog/change buffer | 数据/缓存页 | 链表(LRU)
    - additional memory pool
 
    ![avatar](/static/image/mysql/mysql-innodb-memory.png)
+   ![avatar](/static/image/mysql/mysql-engine-layout.png)
 
-3. innodb flow
+4. innodb flow
 
    - 把数据库文件按页[每页 16K]读取到缓冲池, 然后按照 LRU 的算法来保存在缓冲池中的缓冲数据
    - 如果数据库需要更改, 顺序也必须是:

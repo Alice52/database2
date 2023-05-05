@@ -12,12 +12,16 @@
 
 3. 内容
 
-   - 后台线程: 7 个
-   - buffer pool: redolog/undolog/change buffer | 数据/缓存页 | 链表(LRU)
-   - additional memory pool
+   ![avatar](/static/image/mysql/mysql-innodb-architecture-5.7.png)
+   ![avatar](/static/image/mysql/mysql-innodb-architecture-8.png)
 
-   ![avatar](/static/image/mysql/mysql-innodb-memory.png)
-   ![avatar](/static/image/mysql/mysql-engine-layout.png)
+   - 后台线程: 7 个
+   - buffer pool: ahi | insert/change buffer | 数据/缓存页(数组字典信息) | 链表(LRU) | 其他信息(锁)
+   - redolog
+   - undolog
+   - additional memory pool
+     ![avatar](/static/image/mysql/mysql-innodb-memory.png)
+     ![avatar](/static/image/mysql/mysql-engine-layout.png)
 
 4. innodb flow
 
@@ -27,7 +31,7 @@
      2. 写 redolog 的 prepare 状态
      3. 写 binlog
      4. 调用存储引擎层, 提交事务, 将 redolog 修改为 commit 状态
-   - 所以缓冲池是占内存最大的一部分: 作用是存放各种数据的缓存{**索引页/数据页**/undo 页/插入缓冲/自适应哈希索引/InnoDB 存储的锁信息和数字字典信息}
+   - 所以缓冲池是占内存最大的一部分: 作用是存放各种数据的缓存{**索引页/数据页**/~~undo 页~~/插入缓冲/自适应哈希索引/InnoDB 存储的锁信息和数字字典信息}
 
 ### 后台线程
 
@@ -65,3 +69,10 @@
 7. _自适应哈希索引_
    - 哈希索引的查找复杂度仅为 O(1): 所以速度非常快, 常常用于连接操作
    - 自适应的意思是: InnoDB 存储引擎会监控对表上索引的查找, 如果观察到建立索引表可以带来速度的提升就建立哈希索引
+
+---
+
+## reference
+
+1. https://blog.csdn.net/qq_34408516/article/details/123296196
+2. https://dev.mysql.com/doc/refman/8.0/en/innodb-storage-engine.html

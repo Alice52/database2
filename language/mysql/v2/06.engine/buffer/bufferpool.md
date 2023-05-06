@@ -4,6 +4,8 @@
 
 ![avatar](/static/image/mysql/mysql-conf-bp.png)
 
+![avatar](/static/image/mysql/innoddb-bp.png)
+
 1. 简介
 
    - 存放的是数据与索引: **索引并不是都在内存中**
@@ -19,11 +21,11 @@
 
 2. LRU 流程(mysql 版本): 数据先进 old, 待满 1s 且被再次访问时移入 young 头部
 
-   - 默认按照 5:3 的比例把整个 LRU 链表分成了 young 区域和 old 区域
-   - 要访问数据页 P3, 由于 P3 在 young 区域, 将其移到链表头部, 变成状态 2
+   - 默认按照 5:3 的比例把整个 LRU 链表分成了 young 区域`{热点数据}`和 old`{新载入数据}` 区域
+   - 要访问数据页 P3, 由于 P3 在 young 区域, ~~将其移到链表头部~~`访问young区前1/4时不会移动, 后3/4的数据才会移到链表头部`, 变成状态 2
    - 之后要访问一个新的不存在于当前链表的数据页, 这时候依然是淘汰掉数据页 Pm, 但是新插入的数据页 Px, 是**放在 LRU_old 处**
    - 处于 old 区域的数据页, 每次被访问的时候都要做下面这个判断
-     1. 若这个数据页在 LRU 链表中存在的时间超过了 1 秒, 就把它移动到链表头部
+     1. 若这个数据页在 LRU 链表中存在的时间超过了 1`innodb_old_blocks_time` 秒, 就把它移动到链表头部
      2. 如果这个数据页在 LRU 链表中存在的时间短于 1 秒, 位置保持不变
 
    ![avatar](/static/image/mysql/mysql-pb-o-y.png)
@@ -93,7 +95,62 @@
 7. 热点数据呗淘汰场景
 
    - 预读机制: 是指 MySQL 加载数据页时, 可能会把它相邻的数据页一并加载进来(局部性原理)
-   - 全表扫描
+   - 全表扫描: 使用 Y/Old 解决
+
+8. 多 buffer 实例
+
+   - 一个 buffer pool 在多线程访问的时候，各个链表都会加锁处理
+   - 如果 innodb_buffer_pool_size 小于 1G 时，设置 innodb_buffer_pool_instances 是无效的，都会是 1
+
+   ![avatar](/static/image/mysql/innodb-bp-instances.png)
+
+9. 运行中修改 buffer pool 大小
+
+   - 5.7.5 之前，是不允许在运行时调整 buffer pool 大小的
+   - 之后可以: 因为采用 chunk 为单位`innodb_buffer_pool_chunk_size{128m}`来申请内存空间
+
+10. Adaptive Hash Index: 自适应 Hash 索引
+
+    - 属于 buffer pool 中的一片内存
+    - 当 InnoDB 观察到某个索引的值频繁被使用, 那么会创建自适应 hash 索引, 可以提高查询速度
+    - 通过参数 innodb_adaptive_hash_index 来禁用或启动此特性: 默认为开启{aliyun off}
+
+11. change bugger
+
+    - 好处: 通过减少硬盘随机 IO 读与提高内存利用率, 并发能力更强
+    - 限制: 聚簇索引和唯一索引是无法使用 change buffer(确保唯一性)
+    - 场景: 对于写多读少的业务场景, 索引页在写完以后马上被访问到的概率很小(merge 需要成本), 此时 change buffer 的收益最高
+      ![avatar](/static/image/mysql/innodb-bp-cb-scenario.png)
+    - \_
+    - 发生更新时, 如果数据/索引页在 Buffer Pool 里命中的话, 就直接更新缓存页
+    - 否则, InnoDB 会将这些更新操作缓存在 change buffer 中, 这样就无需从硬盘读入索引页
+    - 下次查询时, 读取页数据, 并将 change buffer 的内容应用到 bp 中后获取: 保证数据准确
+    - 如果没有查询或者宕机时, 数据丢失问题解决(数据安全): 内存刷脏页
+
+      ![avatar](/static/image/mysql/inndodb-bp-cb.png)
+
+## 内存刷脏页(flush 链表): redolog / change bugger
+
+1. 当内存数据页跟磁盘数据页内容不一致的时候, 我们称这个**内存页为 "脏页"**: change buffer
+2. 内存数据写入到磁盘后, 内存和磁盘上的数据页的内容就一致了, 称为"干净页"
+3. flush 时机
+
+   - InnoDB 的 redo log 写满: **系统会停止所有更新操作**, 把 checkpoint 往前推进, redo log 留出空间可以继续写
+   - 系统内存不足: 当需要新的内存页且内存不够用的时候, 就要淘汰一些数据页, 如果淘汰的是 "脏页", 就要将脏页写到磁盘
+     1. 一个查询要淘汰的脏页个数太多, 会导致查询的响应时间明显变长
+   - 系统空闲的时候:
+   - MySQL 正常关闭: 内存的脏页都 flush 到磁盘上
+
+4. innodb_io_capacity: 主机的 IO 能力{InnoDB 全力刷脏页时速度}
+
+   - 建议: `磁盘的IOPS`
+   - `fio -filename=$filename -direct=1 -iodepth 1 -thread -rw=randrw -ioengine=psync -bs=16k -size=500M -numjobs=10 -runtime=10 -group_reporting -name=mytest`
+
+5. 脏页比例是通过 Innodb_buffer_pool_pages_dirty/Innodb_buffer_pool_pages_total
+6. MySQL 刷脏页, 如果发现旁边的数据页刚好是脏页会一起刷掉{蔓延}: `innodb_flush_neighbors`
+7. 设计策略控制刷脏页的速度
+   - 脏页比例: `innodb_max_dirty_pages_pct{0.75}`
+   - redo log 写盘速度
 
 ---
 

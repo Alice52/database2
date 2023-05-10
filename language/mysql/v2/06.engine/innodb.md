@@ -19,6 +19,9 @@
    - buffer pool: ahi | insert/change buffer | 数据/缓存页(数组字典信息) | 链表(LRU) | 其他信息(锁)
    - redolog
    - undolog
+   - doublewrite buffer:
+     1. innodb 默认一 16k/page 读取写入, 磁盘是 4k/page 写入读取, 防止磁盘写入一半而断电无法恢复数据的情况发生, 而引入了 double writer buffer 机制
+     2. doublewrite buffer 是一段连续空间, 大小 2M(128page), 数据写入的时候先写到 doublewrite 空间, 然后再写入到磁盘, 如果发生写入了一个 page 一半的时候断电, 恢复后会自动从 doublewrite 中恢复
    - additional memory pool
      ![avatar](/static/image/mysql/mysql-innodb-memory.png)
      ![avatar](/static/image/mysql/mysql-engine-layout.png)

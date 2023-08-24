@@ -240,7 +240,7 @@ db.collection -
 
 ```js
   // 每个条件之间会被 mongo 使用 $and 连接
-  db.getCollection('jingmaiKol').find({
+  db.getCollection('jmKol').find({
     "isDeleted": false,
     "accountId": ObjectId("5eb3f0ed44bc2902777c5732"),
     "$or": [
@@ -336,22 +336,22 @@ db.getCollection('test').aggregate([
 ## udpate
 
 ```js
-db.jingmaiKol.update({}, { $set: { accountType: 'aaa' } }, false, true);
-db.jingmaiKolAdmin.updateMany(
+db.jmKol.update({}, { $set: { accountType: 'aaa' } }, false, true);
+db.jmKolAdmin.updateMany(
   {},
   { $rename: { mcnCode: 'mcnInvitationCode' } },
   false,
   true
 );
-db.jingmaiKol.update({}, { $unset: { status: '' } }, false, true);
-db.jingmaiKol.updateMany(
+db.jmpdate({}, { $unset: { status: '' } }, false, true);
+db.jmKol.updateMany(
   {},
   { $rename: { contentType: 'accountType' } },
   false,
   true
 );
-db.jingmaiKol.update({}, { $set: { accountType: 'aaa' } }, false, true);
-db.getCollection('jingmaiKolSearchResult').update(
+db.jmKol.update({}, { $set: { accountType: 'aaa' } }, false, true);
+db.getCollection('jmKolSearchResult').update(
   {
     taskId: {
       $in: [ObjectId('5f2bad13f5156d51ed1e26e3')],
